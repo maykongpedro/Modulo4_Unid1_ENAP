@@ -1,0 +1,85 @@
+---
+title: "Módulo 4 - Unidade 1 - Aplicação da Linguagem R na Análise de Dados"
+author: "Maykon Gabriel"
+date: "05/01/2021"
+output: 
+    html_document:
+        highlight: tango
+        theme: paper
+        number_sections: no
+        toc: yes
+        toc_float:
+          collapsed: yes
+          smooth_scroll: no
+---
+# Unidade 4
+🎯 Objetivo de aprendizagem
+
+A proposta deste tópico é colocar em prática algumas das funções do R trabalhando com a análise de dados abertos de viagens a serviço, com o intuito de subsidiar a tomada de medidas mais eficientes na redução dos gastos com os custos dessas viagens no setor público.
+
+# 1. Definição do problema
+
+Para resolver um problema, primeiramente temos que entendê-lo. Assim, precisamos entender os gastos com viagens a serviço para tomar medidas mais eficientes e, com isso, reduzir os custos dessas viagens.
+
+Vamos levantar algumas questões relevantes acerca dessa problemática:
+
+- **Qual é o valor gasto por órgão?**
+- **Qual é o valor gasto por cidade?**
+- **Qual é a quantidade de viagens por mês?**
+
+# 1.1 Carregando pacotes
+```{r,warning=FALSE, message=FALSE}
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+```
+
+
+
+# 2. Obtenção dos dados
+Para obter os dados, basta abrir o [Portal da Transparência](http://www.portaltransparencia.gov.br/download-de-dados), ir em __Viagens a serviço__, clicar no link do arquivo e selecionar o ano da consulta. Após isso é só baixar e abrir no R.
+```{r}
+# Carregando os dados
+viagens <- read.csv2(
+  file = "../dados/2019_Viagem.csv",
+  sep = ";",
+  dec = ","
+)
+
+# Não está dando boa pq a tabela é muito grande
+# kable(head(viagens)) %>% 
+#   kable_styling(full_width = FALSE, bootstrap_options = c("striped"))
+
+View(viagens)
+
+# Resumo da coluna de valor das passagens
+summary(viagens$Valor.passagens)
+```
+
+```{r}
+# Descobrindo o tipo de dado de cada coluna
+dplyr::glimpse(viagens)
+```
+
+## 2.1 Dicionário de dados
+O Dicionário encotra-se no seguinte link: [Dicionário de Dados - Viagens a serviço - Pagamentos](http://www.portaltransparencia.gov.br/pagina-interna/603364-dicionário-de-dados-viagens-a-Serviço-Pagamentos)
+
+# 3. Transformação dos dados
+É importante ter em mente que, na linguagem R, diversas transformações nos dados coletados podem ser realizadas, a depender do tipo de dado e do objetivo da análise.
+
+As colunas de `Período...Data.de.início` e `Período...Data.de.fim` estão como `chr`, porém devem ser convertidas para data. No seguinte link tem algumas informações sobre formatação de datas dentro do R: [Data Values](https://www.statmethods.net/input/dates.html)
+
+```{r}
+# ? as.Date
+
+viagens$data.início <- as.Date(viagens$Período...Data.de.início, "%d/%m/%Y")
+
+dplyr::glimpse(viagens)
+
+```
+```{r}
+viagens$data.início.formatada <- format(viagens$data.início, "%Y-%m")
+head(viagens$data.início.formatada)
+
+```
+
