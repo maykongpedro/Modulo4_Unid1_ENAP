@@ -152,7 +152,12 @@ head(p3)
 p3 %>% 
   ggplot(aes(x = data.início.formatada, y = qtd, group = 1)) +
   geom_line() +
-  geom_point()
+  geom_point() +
+  labs(x = "Data de início da viagem", y = "Quantidade de viagens") +
+  ggtitle("Quantidade de viagens realizadas por mês") +
+  theme(plot.title = element_text(hjust=0.5, vjust=0.5, face = "bold")) #ajustando posição do título
+
+
 
 # Por que é necessário colocar o "group = 1":
 # For line graphs, the data points must be grouped so that it knows which points to connect. 
