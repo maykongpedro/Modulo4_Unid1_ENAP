@@ -120,26 +120,33 @@ p2 <- viagens %>%
 # Renomeando as colunas (2 método)
 p2 <- p2 %>% 
   rename(destino = Destinos, valor = n)
-
+  
 p2
 
 # Plotandos os dados com ggplot
 p2 %>% 
-  ggplot(aes(x = reorder(destino, valor), y = valor)) +  # usando a função reorder para ordenar os dados do eixo x em função do valor
+  ggplot(aes(x = reorder(destino, valor), y = valor/1000000)) +  # usando a função reorder para ordenar os dados do eixo x em função do valor
   geom_bar(stat = "identity", fill = "#0ba791") + # mudando a cor das barras usando o parâmetro "fill"
   
-  geom_text(aes(label = valor), hjust = 0.5, vjust = 0.3, size = 3) + # inserindo texto no gráfico,
+  geom_text(aes(label = round(valor/1000000, 2) ), hjust = 1.2, vjust = 0.3, size = 3) + # inserindo texto no gráfico,
   # label deveria inserir um retângulo para facilitar a leitura, hjust ajusta a posição na horiontal,
   # vjust ajusta a posição do texto na vertical,  e size ajusta o tamanho do mesmo
   
   coord_flip() +  # muda a orientação do gráfico
-  labs(x = "Valor", y = "Destino") # muda o título dos eixos
-
+  scale_y_continuous(limits = c(0,100),expand = c(0, 0)) + # define o limite de y e gruda as barras no eixo
+  # usar  " labels = function(x) paste0("R$", x, "M") " dentro da camada acima para adicionar "R$" no eixo y
+  
+  labs(x = "", y = "") + # títulos do eixos
+  ggtitle("Valores gastos com passagem áerea por cidade (Milhões de R$)") + # título
+  theme_bw() + # tema
+  theme(plot.title = element_text(hjust=0.5, vjust=0.5, face = "bold"))  #ajustando posição do título
+  
 # Essa fórmula faz com que os valores sejam printados como números inteiros
 options(scipen = 999) 
 
 
 # ----------------- 3. Quão a quantidade de viagens realizadas por mês? --------------
+library(lubridate)
 
 p3 <- viagens %>% 
   group_by(data.início.formatada) %>%  #agrupando pela data de início
@@ -148,15 +155,21 @@ p3 <- viagens %>%
 
 head(p3)
 
+
+as.Date(p3$data.início.formatada, format = "%Y/%m") 
+?strptime
+
 # Plotando os dados com ggplot
 p3 %>% 
   ggplot(aes(x = data.início.formatada, y = qtd, group = 1)) +
   geom_line() +
   geom_point() +
+  scale_x_date(date_labels = "%B/%Y")+
   labs(x = "Data de início da viagem", y = "Quantidade de viagens") +
   ggtitle("Quantidade de viagens realizadas por mês") +
+  theme_bw() +
   theme(plot.title = element_text(hjust=0.5, vjust=0.5, face = "bold")) #ajustando posição do título
-
+?read_csv
 
 
 # Por que é necessário colocar o "group = 1":
