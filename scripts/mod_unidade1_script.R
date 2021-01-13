@@ -103,11 +103,15 @@ p1
 
 # Plotando os dados com ggplot
 p1 %>% 
-  ggplot(aes(x = reorder(orgao, valor), y = valor)) + # usando a função reorder para ordenar os dados do eixo x em função do valor
-  geom_bar(stat =  "identity") + # definindo que o gráfico terá a forma geométrica de barras
+  ggplot(aes(x = reorder(orgao, valor), y = valor/1000000)) + # usando a função reorder para ordenar os dados do eixo x em função do valor
+  geom_bar(stat =  "identity", fill = "#f68060", alpha=.6) + # definindo que o gráfico terá a forma geométrica de barras
+  scale_y_continuous(limits = c(0, 120) ,expand = c(0, 0)) + # define o limite de y e gruda as barras no eixo
   coord_flip() + # muda a orientação do gráfico
-  labs(x = "Valor", y = "Orgãos") # muda o título dos eixos
-
+  labs(x = "" , y = "") + # muda o título dos eixos
+  ggtitle("Gasto de orgãos públicos com passagens áereas (Milhões de R$)") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust=0.5, vjust=0.5, face = "bold")) #ajustando posição do título
+  
 # preciso reaprender como formatar o eixo y pros valores não aparecem em notação científica
 
 # ----------------- 2. Quais os valores gastos de passagens aérea por cidade? --------------
@@ -155,21 +159,33 @@ p3 <- viagens %>%
 
 head(p3)
 
+# Formantando a coluna de data para o formato de DATA
+# Primeira etapa necessária para a segunda funcionar
+p3$data.início.formatada <- 
+  format(ym(p3$data.início.formatada), format = "%m/%Y") 
 
-as.Date(p3$data.início.formatada, format = "%Y/%m") 
+p3$data.início.formatada <-
+  lubridate::my(p3$data.início.formatada)
+
+
+# Notação de datas:
 ?strptime
+
 
 # Plotando os dados com ggplot
 p3 %>% 
-  ggplot(aes(x = data.início.formatada, y = qtd, group = 1)) +
+  ggplot(aes(x = data.início.formatada, y = qtd/1000, group = 1)) +
   geom_line() +
   geom_point() +
-  scale_x_date(date_labels = "%B/%Y")+
-  labs(x = "Data de início da viagem", y = "Quantidade de viagens") +
-  ggtitle("Quantidade de viagens realizadas por mês") +
+  
+  scale_x_date(date_labels = "%b/%Y", 
+               limit=c(as.Date("2019-01-01"),as.Date("2019-12-01")),
+               date_breaks = "1 month") +
+  
+  labs(x = "Data de início da viagem", y = "Quantidade de viagens (Milhares)") +
+  ggtitle("Quantidade de viagens realizadas por mês (Milhares)") +
   theme_bw() +
   theme(plot.title = element_text(hjust=0.5, vjust=0.5, face = "bold")) #ajustando posição do título
-?read_csv
 
 
 # Por que é necessário colocar o "group = 1":
@@ -177,11 +193,6 @@ p3 %>%
 # In this case, it is simple -- all points should be connected, so group=1. 
 # When more variables are used and multiple lines are drawn, the grouping for lines is usually done by variable.
 # https://stackoverflow.com/questions/27082601/ggplot2-line-chart-gives-geom-path-each-group-consist-of-only-one-observation
-  
-
-  
-  
-  
   
   
 
