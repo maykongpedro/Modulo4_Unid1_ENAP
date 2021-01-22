@@ -1,7 +1,8 @@
 
 
 # Carregando pacotes
-library(tidyverse)
+if(!require(tidyverse)) install.packages("tidyverse")
+if(!require(ggthemes)) install.packages("ggthemes")
         
 # Carregando os dados
 viagens <- read.csv2(
@@ -106,10 +107,11 @@ p1 %>%
   ggplot(aes(x = reorder(orgao, valor), y = valor/1000000)) + # usando a função reorder para ordenar os dados do eixo x em função do valor
   geom_bar(stat =  "identity", fill = "#f68060", alpha=.6) + # definindo que o gráfico terá a forma geométrica de barras
   scale_y_continuous(limits = c(0, 120) ,expand = c(0, 0)) + # define o limite de y e gruda as barras no eixo
+  geom_text(aes(label = round(valor/1000000, 2) ), hjust = 1.2, vjust = 0.3, size = 3) +
   coord_flip() + # muda a orientação do gráfico
   labs(x = "" , y = "") + # muda o título dos eixos
   ggtitle("Gasto de orgãos públicos com passagens áereas (Milhões de R$)") +
-  theme_bw() +
+  ggthemes::theme_clean() +
   theme(plot.title = element_text(hjust=0.5, vjust=0.5, face = "bold")) #ajustando posição do título
   
 # preciso reaprender como formatar o eixo y pros valores não aparecem em notação científica
@@ -142,7 +144,7 @@ p2 %>%
   
   labs(x = "", y = "") + # títulos do eixos
   ggtitle("Valores gastos com passagem áerea por cidade (Milhões de R$)") + # título
-  theme_bw() + # tema
+  ggthemes::theme_clean() # tema
   theme(plot.title = element_text(hjust=0.5, vjust=0.5, face = "bold"))  #ajustando posição do título
   
 # Essa fórmula faz com que os valores sejam printados como números inteiros
@@ -161,6 +163,7 @@ head(p3)
 
 # Formantando a coluna de data para o formato de DATA
 # Primeira etapa necessária para a segunda funcionar
+
 p3$data.início.formatada <- 
   format(ym(p3$data.início.formatada), format = "%m/%Y") 
 
@@ -183,9 +186,15 @@ p3 %>%
                date_breaks = "1 month") +
   
   labs(x = "Data de início da viagem", y = "Quantidade de viagens (Milhares)") +
+  
   ggtitle("Quantidade de viagens realizadas por mês (Milhares)") +
-  theme_bw() +
-  theme(plot.title = element_text(hjust=0.5, vjust=0.5, face = "bold")) #ajustando posição do título
+  
+  ggthemes::theme_clean() +
+  
+  theme(plot.title = 
+          element_text(hjust=0.5, 
+                       vjust=0.5, 
+                       face = "bold")) #ajustando posição do título
 
 
 # Por que é necessário colocar o "group = 1":

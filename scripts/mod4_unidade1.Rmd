@@ -4,12 +4,12 @@ author: "Maykon Gabriel"
 date: "05/01/2021"
 output: 
     html_document:
-        highlight: tango
-        theme: paper
-        number_sections: no
+        highlight: zenburn
+        theme: simplex 
+        number_sections: yes
         toc: yes
         toc_float:
-          collapsed: yes
+          collapsed: no
           smooth_scroll: no
 ---
 # Unidade 4
@@ -17,7 +17,7 @@ output:
 
 A proposta deste tópico é colocar em prática algumas das funções do R trabalhando com a análise de dados abertos de viagens a serviço, com o intuito de subsidiar a tomada de medidas mais eficientes na redução dos gastos com os custos dessas viagens no setor público.
 
-# 1. Definição do problema
+# Definição do problema
 
 Para resolver um problema, primeiramente temos que entendê-lo. Assim, precisamos entender os gastos com viagens a serviço para tomar medidas mais eficientes e, com isso, reduzir os custos dessas viagens.
 
@@ -27,59 +27,103 @@ Vamos levantar algumas questões relevantes acerca dessa problemática:
 - **Qual é o valor gasto por cidade?**
 - **Qual é a quantidade de viagens por mês?**
 
-# 1.1 Carregando pacotes
-```{r,warning=FALSE, message=FALSE}
-library(tidyverse)
-library(knitr)
-library(kableExtra)
-```
-
-
-
-# 2. Obtenção dos dados
-Para obter os dados, basta abrir o [Portal da Transparência](http://www.portaltransparencia.gov.br/download-de-dados), ir em __Viagens a serviço__, clicar no link do arquivo e selecionar o ano da consulta. Após isso é só baixar e abrir no R.
-```{r}
-# Carregando os dados
-viagens <- read.csv2(
-  file = "../dados/2019_Viagem.csv",
-  sep = ";",
-  dec = ","
-)
-
-# Não está dando boa pq a tabela é muito grande
-# kable(head(viagens)) %>% 
-#   kable_styling(full_width = FALSE, bootstrap_options = c("striped"))
-
-View(viagens)
-
-# Resumo da coluna de valor das passagens
-summary(viagens$Valor.passagens)
-```
-
-```{r}
-# Descobrindo o tipo de dado de cada coluna
-dplyr::glimpse(viagens)
-```
-
-## 2.1 Dicionário de dados
+## Dicionário de dados
 O Dicionário encotra-se no seguinte link: [Dicionário de Dados - Viagens a serviço - Pagamentos](http://www.portaltransparencia.gov.br/pagina-interna/603364-dicionário-de-dados-viagens-a-Serviço-Pagamentos)
 
-# 3. Transformação dos dados
-É importante ter em mente que, na linguagem R, diversas transformações nos dados coletados podem ser realizadas, a depender do tipo de dado e do objetivo da análise.
 
-As colunas de `Período...Data.de.início` e `Período...Data.de.fim` estão como `chr`, porém devem ser convertidas para data. No seguinte link tem algumas informações sobre formatação de datas dentro do R: [Data Values](https://www.statmethods.net/input/dates.html)
+# Carregando pacotes
+```{r carregar pacotes,warning=FALSE, message=FALSE}
+# Carregando pacotes com pacman
+if(!require("pacman")) install.packages("pacman")
+pacman::p_load(vroom,lubridate,tidyverse,knitr, kableExtra)
+```
 
-```{r}
-# ? as.Date
 
-viagens$data.início <- as.Date(viagens$Período...Data.de.início, "%d/%m/%Y")
+# Obtenção dos dados
+Para obter os dados, basta abrir o [Portal da Transparência](http://www.portaltransparencia.gov.br/download-de-dados), ir em __Viagens a serviço__, clicar no link do arquivo e selecionar o ano da consulta. Após isso é só baixar e abrir no R. Nesse exemplo vamos usar o Vroom, pacote para abrir rapidamente arquivos pesados em formato ".csv".
+```{r importacao dos dados, warning=FALSE, message=FALSE}
+# Carregando os dados com vroom, necessário usar o parâmetro "encode" por conta dos acentos no cabeçalho
+viagens <- vroom(
+  file = "../dados/2019_Viagem.csv", 
+  delim = ";", 
+  locale = vroom::locale(encoding = "WINDOWS-1252") )
 
+# Ajustando o espaço entre as palavras do cabeçalho
+names(viagens) <-
+  stringr::str_replace_all(
+    string = names(viagens), 
+    pattern = " ", 
+    replacement = ".")
+  
+# Exibindo a tabela
+rmarkdown::paged_table(viagens, options = list(rows.print = 10))
+
+```
+
+
+## Resumo dos valores de passagens
+```{r resumo dos dados}
+# Resumo da coluna de valor das passagens
+summary(viagens$Valor.passagens)
+
+```
+
+## Tipo de dado de cada coluna
+```{r tipo de dados}
+# Descobrindo o tipo de dado de cada coluna
 dplyr::glimpse(viagens)
 
 ```
-```{r}
+
+# Transformação dos dados
+É importante ter em mente que, na linguagem R, diversas transformações nos dados coletados podem ser realizadas, a depender do tipo de dado e do objetivo da análise.
+
+## Datas
+As colunas de `Período...Data.de.início` e `Período...Data.de.fim` estão como `chr`, porém devem ser convertidas para data. No seguinte link tem algumas informações sobre formatação de datas dentro do R: [Data Values](https://www.statmethods.net/input/dates.html)
+
+```{r transf data}
+# ? as.Date
+# Convertendo colunas para data
+viagens <- 
+  viagens %>% 
+  dplyr::mutate(`Período.-.Data.de.fim` = as.Date(`Período.-.Data.de.fim`, "%d/%m/%Y"),
+         `Período.-.Data.de.início` = as.Date(`Período.-.Data.de.início`, "%d/%m/%Y"))
+
+# Criando coluna "data.início"
+viagens$data.início <- as.Date(viagens$`Período.-.Data.de.início`, "%d/%m/%Y")
+
+# Formatando a data para Ano/Mês
 viagens$data.início.formatada <- format(viagens$data.início, "%Y-%m")
+
+# Exibindo os primeiros valores da coluna criada
 head(viagens$data.início.formatada)
 
 ```
+
+## Números
+Um ponto negativo do `vroom` é que normalmente ele carrega tudo como "chr" caso não seja definido o tipo das colunas, então é necessário ajustar essas colunas para o tipo correto.
+```{r transf numeros, warning=FALSE}
+
+viagens <-
+  viagens %>% 
+  dplyr::mutate(`Valor.diárias` = as.double(`Valor.diárias`),
+                `Valor.passagens` = as.double(`Valor.passagens`),
+                `Valor.outros.gastos` = as.double(`Valor.outros.gastos`))
+
+```
+
+
+# Exploração dos dados
+
+## Histograma
+```{r histograma, message=FALSE, warning=FALSE}
+# hist(viagens$Valor.passagens, breaks = 50)
+```
+
+
+
+
+
+
+
 
