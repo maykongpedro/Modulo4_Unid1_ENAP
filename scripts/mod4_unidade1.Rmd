@@ -35,18 +35,27 @@ O Dicionário encotra-se no seguinte link: [Dicionário de Dados - Viagens a ser
 ```{r carregar pacotes,warning=FALSE, message=FALSE}
 # Carregando pacotes com pacman
 if(!require("pacman")) install.packages("pacman")
-pacman::p_load(vroom,lubridate,tidyverse,knitr, kableExtra)
+pacman::p_load(vroom,lubridate,tidyverse,knitr, kableExtra, here)
 ```
 
 
 # Obtenção dos dados
 Para obter os dados, basta abrir o [Portal da Transparência](http://www.portaltransparencia.gov.br/download-de-dados), ir em __Viagens a serviço__, clicar no link do arquivo e selecionar o ano da consulta. Após isso é só baixar e abrir no R. Nesse exemplo vamos usar o Vroom, pacote para abrir rapidamente arquivos pesados em formato ".csv".
+
 ```{r importacao dos dados, warning=FALSE, message=FALSE}
 # Carregando os dados com vroom, necessário usar o parâmetro "encode" por conta dos acentos no cabeçalho
 viagens <- vroom(
   file = "../dados/2019_Viagem.csv", 
   delim = ";", 
   locale = vroom::locale(encoding = "WINDOWS-1252") )
+
+
+# Ou com "here"
+viagens <- vroom(
+  file = here::here("dados","2019_Viagem.csv"), 
+  delim = ";", 
+  locale = vroom::locale(encoding = "WINDOWS-1252") )
+
 
 # Ajustando o espaço entre as palavras do cabeçalho
 names(viagens) <-
