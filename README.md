@@ -1,6 +1,6 @@
 # Módulo 4 - Unidade 1
 ## Curso Análise de dados em Linguagem R - ENAP
-Anotações do Módulo 4: Análise de Dados na Prática, Unidade 1: Analisando dados abertos de viagens a serviço".
+Anotações do **Módulo 4: Análise de Dados na Prática, Unidade 1: Analisando dados abertos de viagens a serviço**.
 Os dados aqui presentes são basicamente o passo a passo dessa unidade com algumas adições e modificações pessoais realizadas como incremento dos meus estudos com a Linguagem R.
 
 Curso gratuito disponível no seguinte link:
