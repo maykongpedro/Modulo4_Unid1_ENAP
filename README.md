@@ -17,7 +17,7 @@ Gastos com viagens a serviço a partir de dados do Portal da Transparência, as 
 - Qual é a quantidade de viagens por mês?
 
 ### 2. Obtenção dos dados
-Os dados podem ser optidos a partir do [Portal da Transparência](http://www.portaltransparencia.gov.br/download-de-dados), Viagens a serviço, clicar no link do **"Arquivo"** e selecionar o ano da consulta (2019). Após isso é só baixar e colar o arquivo dentro da pasta "dados" desse projeto.
+Os dados podem ser optidos a partir do [Portal da Transparência](http://www.portaltransparencia.gov.br/download-de-dados), Viagens a serviço, clicar no link do **"Arquivo"** e selecionar o ano da consulta (2019). Após o download é necessário extrair o zip, haverá 4 arquivos disponíveis: Pagamento, Passagem, Trecho e Viagem. Copiar e colar apenas o arquivo "2019_Viagem" dentro da pasta "dados" desse projeto.
 
 O dicionários dos dados pode ser consultado no seguinte link:
 [Dicionário de Dados - Viagens a serviço - Pagamentos](http://www.portaltransparencia.gov.br/pagina-interna/603364-dicionário-de-dados-viagens-a-Serviço-Pagamentos)
