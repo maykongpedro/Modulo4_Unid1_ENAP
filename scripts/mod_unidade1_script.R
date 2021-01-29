@@ -1,8 +1,8 @@
 
 
 # Carregando pacotes
-if(!require(tidyverse)) install.packages("tidyverse")
-if(!require(ggthemes)) install.packages("ggthemes")
+if(!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse, ggthemes)
         
 # Carregando os dados
 viagens <- read.csv2(
@@ -113,8 +113,6 @@ p1 %>%
   ggtitle("Gasto de orgãos públicos com passagens áereas (Milhões de R$)") +
   ggthemes::theme_clean() +
   theme(plot.title = element_text(hjust=0.5, vjust=0.5, face = "bold")) #ajustando posição do título
-  
-# preciso reaprender como formatar o eixo y pros valores não aparecem em notação científica
 
 # ----------------- 2. Quais os valores gastos de passagens aérea por cidade? --------------
 p2 <- viagens %>% 
